@@ -1,22 +1,20 @@
+from calendar import Calendar
 from tkinter import *
-from tkinter import messagebox;
-
+from tkinter import messagebox
+import tkcalendar
+from datetime import date
 
 if __name__ == "__main__":
 
     root = Tk()
-    root.configure(background='Gray')
+    root.configure(back='LightBlue')
     root.title("Airline Ticket Pricing")
     root.geometry("600x600")
-
-
-
     heading = Label(root, text="Enter the Details", bg="White")
-
 
     source = Label(root, text="Source")
     destination = Label(root, text="Destination")
-    date = Label(root, text="Date")
+    Date = Label(root, text="Date")
     airline = Label(root, text="Airline")
     travelclass = Label(root, text="Class")
 
@@ -24,7 +22,7 @@ if __name__ == "__main__":
     heading.grid(row=1, column=6,pady=30)
     source.grid(row=2, column=4,padx=65,pady=10)
     destination.grid(row=4, column=4,pady=10)
-    date.grid(row=6, column=4,pady=10)
+    Date.grid(row=6, column=4,pady=10)
     airline.grid(row=8, column=4,pady=10)
     travelclass.grid(row=10, column=4,pady=10)
 
@@ -41,12 +39,7 @@ if __name__ == "__main__":
     afield=OptionMenu(root,airlines,*airlinelist)
     source_field=OptionMenu(root,citysource,*sourcelist)
     destination_field = OptionMenu(root, citydestination,*destinationlist)
-    date=StringVar()
-    month=StringVar()
-    year=StringVar()
-    date_field=OptionMenu(root,date,"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31")
-    month_field=OptionMenu(root,month,"January","February","March","April","May","June","July","August","September","October","November","December")
-    year_field=OptionMenu(root,year,"2019","2020")
+    cal = tkcalendar.DateEntry(root, selectmode="day", year=2019, month=6, day=4)
 
     classlist=StringVar()
     travelclass_field = OptionMenu(root,classlist,"Economy","Premium")
@@ -55,9 +48,7 @@ if __name__ == "__main__":
 
     source_field.grid(row=2, column=6)
     destination_field.grid(row=4, column=6 )
-    date_field.grid(row=6, column=6)
-    month_field.grid(row=6, column=7,padx=50)
-    year_field.grid(row=6, column=9)
+    cal.grid(row=6,column=6)
     afield.grid(row=8, column=6)
     travelclass_field.grid(row=10, column=6)
 
@@ -91,40 +82,68 @@ if __name__ == "__main__":
 
 
     def bclick():
+        flag=True;
+        if not citysource.get():
+            messagebox.showinfo("Error !!!" ,"Please enter all the fields !")
+            flag=False;
+        elif not citydestination.get():
+            messagebox.showinfo("Error !!!" ,"Please enter all the fields !")
+            flag = False;
+        elif not airlines.get():
+            messagebox.showinfo("Error !!!" ,"Please enter all the fields !")
+            flag = False;
+        elif not classlist.get():
+            messagebox.showinfo("Error !!!" ,"Please enter all the fields !")
+            flag = False;
+        elif cal.get_date()<date.today():
+            messagebox.showinfo("Error !!!" ,"Invalid Date")
+            flag=False;
+
+
+
+
         domestic = ["Delhi", "Ahmedabad", "Mumbai", "Bangalore"]
 
         international = ["Kathmandu", "Singapore", "Bali", "Dubai", "Tokyo", "Paris", "Geneva", "NewYork"]
-        if (citysource.get() in domestic and citydestination.get() in domestic):
-            domestictravel = True;
-        else:
-            domestictravel = False;
+        flag1=True
+        if (citysource.get() == citydestination.get() and flag==True):
+            messagebox.showinfo("Error!!!","Source and Destination should be different !")
+            flag1=False;
 
-        if (classlist.get() == "Economy"):
-            if (domestictravel == True):
-                duration = abs((domestic.index(citydestination.get()) - domestic.index(citysource.get()))) ;
-                price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + (FlightDurationEconomy * duration) + (SeatsEconomy * NoOfSeatsEconomy) + (PitchEconomy * NoOfPitchEconomy) + (WidthEconomy * NoOfWidthEconomy) + (PercentPremiumEconomy * NoOfPercentPremiumSeats))
-            else:
-                if (citydestination.get() in international and citysource.get() in domestic):
-                    duration = abs((international.index(citydestination.get()) + 3 - domestic.index(citysource.get()))) * 3;
-                elif(citydestination.get() in domestic and citysource.get() in international):
-                    duration = abs((domestic.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
-                else:
-                    duration = abs((international.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
-                price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + IsInternationalEconomy + (FlightDurationEconomy * duration) + (SeatsEconomy * NoOfSeatsEconomy) + (PitchEconomy * NoOfPitchEconomy) + (WidthEconomy * NoOfWidthEconomy) + (PercentPremiumEconomy * NoOfPercentPremiumSeats))
-        else:
-            if (domestictravel == True):
-                duration = abs((domestic.index(citydestination.get()) - domestic.index(citysource.get()))) ;
-                price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + (FlightDurationPremium * duration) + (SeatsPremium * NoOfSeatsPremium) + (PitchPremium * NoOfPitchPremium) + (WidthPremium * NoOfWidthPremium) + (PercentPremiumPremium * NoOfPercentPremiumSeats))
-            else:
-                if (citydestination.get() in international and citysource.get() in domestic):
-                    duration = abs((international.index(citydestination.get()) + 3 - domestic.index(citysource.get()))) * 3;
-                elif (citydestination.get() in domestic and citysource.get() in international):
-                    duration = abs((domestic.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
-                else:
-                    duration = abs((international.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
-                price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + IsInternationalPremium + (FlightDurationPremium * duration) + (SeatsPremium * NoOfSeatsPremium) + (PitchPremium * NoOfPitchPremium) + (WidthPremium * NoOfWidthPremium) + (PercentPremiumPremium * NoOfPercentPremiumSeats))
 
-        messagebox.showinfo("Predicted Price", str(abs(price))+" $")
+
+        if(flag==True and flag1==True):
+            if (citysource.get() in domestic and citydestination.get() in domestic):
+                domestictravel = True;
+            else:
+                domestictravel = False;
+
+            if (classlist.get() == "Economy"):
+                if (domestictravel == True):
+                    duration = abs((domestic.index(citydestination.get()) - domestic.index(citysource.get()))) ;
+                    price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + (FlightDurationEconomy * duration) + (SeatsEconomy * NoOfSeatsEconomy) + (PitchEconomy * NoOfPitchEconomy) + (WidthEconomy * NoOfWidthEconomy) + (PercentPremiumEconomy * NoOfPercentPremiumSeats))
+                else:
+                    if (citydestination.get() in international and citysource.get() in domestic):
+                        duration = abs((international.index(citydestination.get()) + 3 - domestic.index(citysource.get()))) * 3;
+                    elif(citydestination.get() in domestic and citysource.get() in international):
+                        duration = abs((domestic.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
+                    else:
+                        duration = abs((international.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
+                    price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + IsInternationalEconomy + (FlightDurationEconomy * duration) + (SeatsEconomy * NoOfSeatsEconomy) + (PitchEconomy * NoOfPitchEconomy) + (WidthEconomy * NoOfWidthEconomy) + (PercentPremiumEconomy * NoOfPercentPremiumSeats))
+            else:
+                if (domestictravel == True):
+                    duration = abs((domestic.index(citydestination.get()) - domestic.index(citysource.get()))) ;
+                    price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + (FlightDurationPremium * duration) + (SeatsPremium * NoOfSeatsPremium) + (PitchPremium * NoOfPitchPremium) + (WidthPremium * NoOfWidthPremium) + (PercentPremiumPremium * NoOfPercentPremiumSeats))
+                else:
+                    if (citydestination.get() in international and citysource.get() in domestic):
+                        duration = abs((international.index(citydestination.get()) + 3 - domestic.index(citysource.get()))) * 3;
+                    elif (citydestination.get() in domestic and citysource.get() in international):
+                        duration = abs((domestic.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
+                    else:
+                        duration = abs((international.index(citydestination.get()) - international.index(citysource.get())) + 3) * 3;
+                    price = int(AirlineEconomyPrice[airlinelist.index(airlines.get())] + IsInternationalPremium + (FlightDurationPremium * duration) + (SeatsPremium * NoOfSeatsPremium) + (PitchPremium * NoOfPitchPremium) + (WidthPremium * NoOfWidthPremium) + (PercentPremiumPremium * NoOfPercentPremiumSeats))
+            if(flag1==True):
+             messagebox.showinfo("Predicted Price", str(abs(price))+" $")
 
 
 
@@ -132,11 +151,6 @@ if __name__ == "__main__":
     btn = Button(root, text="Show Price", fg="Black",
                     bg="White", command= bclick)
     btn.grid(row=12, column=6,pady=35)
-
-
-
-
-
 
 
 
